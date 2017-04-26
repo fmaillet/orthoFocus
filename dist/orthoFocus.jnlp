@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="orthoFocus.jnlp">
+  <information>
+    <title>orthoFocus</title>
+    <vendor>fmail</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="lib\easyogg.jar" size="9520" download="eager" />
+    <jar href="lib\jogg-0.0.7.jar" size="6839" download="eager" />
+    <jar href="lib\jorbis-0.0.15.jar" size="58917" download="eager" />
+    <jar href="orthoFocus.jar" size="72278" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="orthoFocus" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="orthoFocus.OrthoFocus"  name="orthoFocus" />
+  <update check="always"/>
+</jnlp>
