@@ -45,6 +45,9 @@ import org.newdawn.easyogg.OggClip;
  * @author fmail
  */
 public class OrthoFocus extends Application {
+    
+    final public static String version = "0.3.0" ;
+    
     static boolean TSsupport, MTSsupport ;
     static GameFX game ;
     
@@ -61,9 +64,9 @@ public class OrthoFocus extends Application {
         
         stage.setWidth(800);
         stage.setHeight(600);
-        if (TSsupport) stage.setTitle("orthoFocus (Touch Screen supported !)");
-        else if (MTSsupport) stage.setTitle("orthoFocus (MultiTouch Screen supported !)");
-        else stage.setTitle("orthoFocus (Touch Screen not supported !)");
+        if (TSsupport) stage.setTitle("orthoFocus " + version + " (Touch Screen supported !)");
+        else if (MTSsupport) stage.setTitle("orthoFocus " + version + " (MultiTouch Screen supported !)");
+        else stage.setTitle("orthoFocus " + version + " (Touch Screen not supported !)");
         
         final Group rootGroup = new Group();
         final Scene scene = new Scene(rootGroup, 800, 400, Color.WHEAT);
