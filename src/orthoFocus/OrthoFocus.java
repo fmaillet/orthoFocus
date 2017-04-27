@@ -20,6 +20,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -197,8 +198,17 @@ public class OrthoFocus extends Application {
         nbDistracts.setMaxWidth(70);
         rootGroup.getChildren().addAll(nbDistracts, labelNbDistracts);
         
+        //Distraction sensorielle
+        Label labelDistraction = new Label("Distraction :");
+        labelDistraction.setTranslateX(20) ;  labelDistraction.setTranslateY(200) ;
+        CheckBox dsSensoriel = new CheckBox("Sensorielle");
+        dsSensoriel.setTranslateX(120) ;  dsSensoriel.setTranslateY(200) ;
+        CheckBox dsSoscial = new CheckBox("Sociale");
+        dsSoscial.setTranslateX(220) ;  dsSoscial.setTranslateY(200) ;
+        rootGroup.getChildren().addAll(labelDistraction, dsSensoriel, dsSoscial);
+        
         //Un bouton pour lancer le jeu
-        launchGame = new Button("Launch Game");
+        launchGame = new Button("Démarrer le jeu");
         launchGame.setOnAction((ActionEvent e) -> {
             //On donne la consigne
             OggClip consigne = null ;
@@ -213,8 +223,8 @@ public class OrthoFocus extends Application {
             launchGame.setDisable(true);
         });
         //add the button to the scene
-        launchGame.setTranslateX(150) ;
-        launchGame.setTranslateY(250) ;
+        launchGame.setTranslateX(20) ;
+        launchGame.setTranslateY(270) ;
         rootGroup.getChildren().add(launchGame);
         
         // ajout de la scène sur l'estrade
