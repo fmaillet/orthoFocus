@@ -54,6 +54,8 @@ public class OrthoFocus extends Application {
     static int itemSize = 1 ;
     static int nbItemsToCreate = 8 ;
     static int nbDistractorsToCreate = 20 ;
+    static boolean doSensorialDistraction  = false ;
+    static boolean doSocialDistraction = false ;
     static Button launchGame ;
     static Stage mainStage ;
     
@@ -206,9 +208,9 @@ public class OrthoFocus extends Application {
         labelDistraction.setTranslateX(20) ;  labelDistraction.setTranslateY(200) ;
         CheckBox dsSensoriel = new CheckBox("Sensorielle");
         dsSensoriel.setTranslateX(120) ;  dsSensoriel.setTranslateY(200) ;
-        CheckBox dsSoscial = new CheckBox("Sociale");
-        dsSoscial.setTranslateX(220) ;  dsSoscial.setTranslateY(200) ;
-        rootGroup.getChildren().addAll(labelDistraction, dsSensoriel, dsSoscial);
+        CheckBox dsSocial = new CheckBox("Sociale");
+        dsSocial.setTranslateX(220) ;  dsSocial.setTranslateY(200) ;
+        rootGroup.getChildren().addAll(labelDistraction, dsSensoriel, dsSocial);
         
         //Un bouton pour lancer le jeu
         launchGame = new Button("Démarrer le jeu");
@@ -221,6 +223,8 @@ public class OrthoFocus extends Application {
             
             nbItemsToCreate = nbItems.getValue() ;
             nbDistractorsToCreate = nbDistracts.getValue() ;
+            doSensorialDistraction = dsSensoriel.isSelected() ;
+            doSocialDistraction = dsSocial.isSelected() ;
             if (primary.equals(secondary)) stage.setIconified(true);
             game = new GameFX (secondary) ;
             launchGame.setDisable(true);

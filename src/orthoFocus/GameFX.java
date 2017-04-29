@@ -40,6 +40,8 @@ public class GameFX extends Stage {
    
     static Stage thisStage ;
     static PerceptiveDistraction sideDistractor ;
+    static SocialDistraction socialDistractor ;
+    static Face face ;
     SearchItems items ;
      
     //Constructor
@@ -87,6 +89,10 @@ public class GameFX extends Stage {
         // ajout de tous les éléments de la scène
         root.getChildren().add(ground);
         
+        //On teste le visage
+        face = new Face (2*this.getHeight()/3) ;
+        root.getChildren().add(face) ;
+        
         //On affiche
         setScene(scene);
         centerOnScreen () ;
@@ -95,6 +101,8 @@ public class GameFX extends Stage {
         show () ;
         sideDistractor = new PerceptiveDistraction (ground) ;
         sideDistractor.start();
+        socialDistractor = new SocialDistraction (ground, face) ;
+        socialDistractor.start();
         //Si on ferme la fenêtre, on arrête le thread
         this.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -114,9 +122,7 @@ public class GameFX extends Stage {
             }
         });
         
-        //On teste le visage
-        Face face = new Face (2*this.getHeight()/3) ;
-        root.getChildren().add(face) ;
+        
         //On teste l'ajout d'items
         items = new SearchItems (OrthoFocus.nbItemsToCreate, this.getWidth(), 2*this.getHeight()/3) ;
         root.getChildren().add(items) ;
@@ -128,7 +134,7 @@ public class GameFX extends Stage {
     
     static public void itsAllDone (boolean normalEnd) {
         sideDistractor.interrupt();
-        
+        socialDistractor.interrupt();
         OrthoFocus.gameEnded (normalEnd) ;
         //thisStage.fireEvent(new WindowEvent(thisStage,WindowEvent.WINDOW_CLOSE_REQUEST));
     }
@@ -146,9 +152,43 @@ class PerceptiveDistraction extends Thread {
     }
     
     public void run(){
+        if (!OrthoFocus.doSensorialDistraction) {
+            ground.setFill(Color.GREEN);
+            return ;
+        }
         while (this.keepRunning) {
             for (int i = 0; i < 256; i++) {
                    ground.setFill(Color.hsb(i, 1.0f, 1.0f));
+                   //ground.setFill(Color.hsb(i / 256.0f, 1.0f, 1.0f));
+                   try {Thread.sleep(12);} catch (InterruptedException ie) {this.keepRunning = false;}
+            }
+        }
+    }
+    
+}
+
+class SocialDistraction extends Thread {
+    
+    static Rectangle ground ;
+    static Face face ;
+    boolean keepRunning ;
+    
+    public SocialDistraction (Rectangle ground, Face face) {
+        this.ground = ground ;
+        this.face = face ;
+        this.keepRunning = true ;
+        this.setName("Sensorial");
+    }
+    
+    public void run(){
+        if (!OrthoFocus.doSocialDistraction) {
+            face.setVisible(false);
+            return ;
+        }
+        while (this.keepRunning) {
+            for (int i = 0; i < 256; i++) {
+                   face.setTranslateX(i);
+                   //face.setLayoutX(20.0);
                    //ground.setFill(Color.hsb(i / 256.0f, 1.0f, 1.0f));
                    try {Thread.sleep(12);} catch (InterruptedException ie) {this.keepRunning = false;}
             }
