@@ -17,8 +17,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -33,10 +39,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.newdawn.easyogg.OggClip;
 
 
@@ -59,10 +65,13 @@ public class OrthoFocus extends Application {
     static Button launchGame ;
     static Stage mainStage ;
     
+    private static int[] numeroEssai = new int[4] ;
+    
     @Override
     public void start(Stage stage) {
         Random r = new Random() ;
         this.mainStage = stage ;
+        for (int i=0; i<4; i++) numeroEssai[i] = 0 ;
         
         stage.setWidth(800);
         stage.setHeight(600);
@@ -232,6 +241,9 @@ public class OrthoFocus extends Application {
         //add the button to the scene
         launchGame.setTranslateX(20) ;
         launchGame.setTranslateY(270) ;
+        rootGroup.getChildren().add(prepareGraph());
+        
+        //Prepare graph
         rootGroup.getChildren().add(launchGame);
         
         // ajout de la scène sur l'estrade
@@ -239,7 +251,51 @@ public class OrthoFocus extends Application {
         // ouvrir le rideau
         stage.show();
         stage.centerOnScreen();
-  
+        
+    }
+    
+    static private XYChart.Series serie1, serie2, serie3, serie4 ;
+    
+    private LineChart prepareGraph () {
+        final CategoryAxis xAxis = new CategoryAxis();
+        //xAxis.setTickUnit(1);
+        //xAxis.setMaxWidth(35);
+        //xAxis.setMinorTickCount(1);
+        //xAxis.set
+        final NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Temps (sec.)");
+        yAxis.setAutoRanging(true);
+        yAxis.setForceZeroInRange(false);
+        
+        //Chart
+        final LineChart<String,Number> lineChart = 
+                new LineChart<String,Number>(xAxis,yAxis);
+        lineChart.setTitle("Résultats");
+        lineChart.setLayoutX(300); lineChart.setLayoutY(130);
+        lineChart.setMaxWidth(450); lineChart.setMaxHeight(350);
+        
+        //Datas
+        serie1 = new XYChart.Series();
+        serie1.setName("Sans");
+        //serie1.getData().add(new XYChart.Data("1", 23));
+        //serie1.getData().add(new XYChart.Data("2", 14));
+        serie2 = new XYChart.Series();
+        serie2.setName("Sensoriel");
+        //serie2.getData().add(new XYChart.Data("1", 19));
+        //serie2.getData().add(new XYChart.Data("2", 12));
+        serie3 = new XYChart.Series();
+        serie3.setName("Social");
+        //serie3.getData().add(new XYChart.Data("1", 10));
+        //serie3.getData().add(new XYChart.Data("2", 10));
+        serie4 = new XYChart.Series();
+        serie4.setName("Les deux");
+        //serie4.getData().add(new XYChart.Data("1", 8));
+        //serie4.getData().add(new XYChart.Data("2", 9));
+        
+        lineChart.getData().addAll(serie1, serie2, serie3, serie4);
+        //lineChart.setCreateSymbols(false);
+        
+        return lineChart;
     }
     
     private MenuBar MyMenuBar (final ReadOnlyDoubleProperty menuWidthProperty) {
@@ -266,13 +322,51 @@ public class OrthoFocus extends Application {
         return menuBar;
     }
     
-    static public void gameEnded (boolean normalEnd) {
+    static public void gameEnded (boolean normalEnd, long delay) {
         //On remet le bouton on
         launchGame.setDisable(false);
         //On supprime la fenêtre de jeu
         game = null ;
         mainStage.setIconified(false);
         System.gc();
+        //On met à jour le graphe
+        if (normalEnd) {
+            XYChart.Data<String, Number> data ;
+            if (!doSensorialDistraction && !doSocialDistraction) {
+                numeroEssai[0]++;
+                data = new XYChart.Data<String, Number>(Integer.toString(numeroEssai[0]), delay) ;
+                serie1.getData().add(data);
+            }
+            else if (doSensorialDistraction && !doSocialDistraction) {
+                numeroEssai[1]++;
+                data = new XYChart.Data<String, Number>(Integer.toString(numeroEssai[1]), delay) ;
+                serie2.getData().add(data);
+                
+            }
+            else if (!doSensorialDistraction && doSocialDistraction) {
+                numeroEssai[2]++;
+                data = new XYChart.Data<String, Number>(Integer.toString(numeroEssai[2]), delay) ;
+                serie3.getData().add(data);
+            }
+            else {
+                numeroEssai[3]++;
+                data = new XYChart.Data<String, Number>(Integer.toString(numeroEssai[3]), delay) ;
+                serie4.getData().add(data);
+            }
+            //ToolTips sur le graph
+            data.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    //lbl.setText(data.getYValue()+"");
+                    Tooltip t = new Tooltip(data.getYValue()+"");
+                    t.setOpacity(0.5);
+                    Tooltip.install(data.getNode(), t);
+
+                }
+            });
+        }
+        
+        
     }
 
     /**

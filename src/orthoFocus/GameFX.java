@@ -12,7 +12,6 @@ import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
 import javafx.animation.PathTransition.OrientationType;
-import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -55,12 +54,14 @@ public class GameFX extends Stage {
     static SocialDistraction socialDistractor ;
     static Face face ;
     SearchItems items ;
+    static boolean normalEnd = false ;
      
     //Constructor
     public GameFX (Screen s) {
         thisStage = this ;
         sideDistractor = null ;
         items = null ;
+        this.normalEnd = false ;
         //Position
         Rectangle2D bounds = s.getBounds();
         this.setX(bounds.getMinX());
@@ -116,11 +117,15 @@ public class GameFX extends Stage {
         socialDistractor = new SocialDistraction (ground, face) ;
         socialDistractor.start();
         //Si on ferme la fenêtre, on arrête le thread
+        //On démarre le chrono
+        long startChrono = System.currentTimeMillis();
         this.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                
-                GameFX.itsAllDone(false);
+                sideDistractor.interrupt();
+                socialDistractor.interrupt();
+                //GameFX.itsAllDone(false);
+                OrthoFocus.gameEnded (normalEnd, (System.currentTimeMillis()- startChrono)/1000) ;
             }
         });
         
@@ -128,7 +133,7 @@ public class GameFX extends Stage {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override public void handle(KeyEvent event) {
               switch (event.getCode()) {
-                case ESCAPE: fireEvent(new WindowEvent(thisStage,WindowEvent.WINDOW_CLOSE_REQUEST)); GameFX.itsAllDone(false); break;
+                case ESCAPE: fireEvent(new WindowEvent(thisStage,WindowEvent.WINDOW_CLOSE_REQUEST)); break;
                 default:  break;
               }
             }
@@ -144,10 +149,10 @@ public class GameFX extends Stage {
         
     }
     
-    static public void itsAllDone (boolean normalEnd) {
+    static public void itsAllDone_ () {
         sideDistractor.interrupt();
         socialDistractor.interrupt();
-        OrthoFocus.gameEnded (normalEnd) ;
+        //OrthoFocus.gameEnded (normalEnd, 52) ;
         //thisStage.fireEvent(new WindowEvent(thisStage,WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 }
@@ -333,8 +338,9 @@ class SearchItems extends Group {
                     try { audio = new OggClip(this.getClass().getResourceAsStream("bravo.ogg")); }
                     catch (final IOException e) {System.out.println ("Sound loading pb: " + e.toString()) ;}
                     audio.play() ;
+                    GameFX.normalEnd = true ;
                     GameFX.thisStage.fireEvent(new WindowEvent(GameFX.thisStage,WindowEvent.WINDOW_CLOSE_REQUEST));
-                    GameFX.itsAllDone(true);
+                    //GameFX.itsAllDone(true);
                 }
             }
         };

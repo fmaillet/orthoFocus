@@ -11,7 +11,7 @@
     <jar href="lib\easyogg.jar" size="9520" download="eager" />
     <jar href="lib\jogg-0.0.7.jar" size="6839" download="eager" />
     <jar href="lib\jorbis-0.0.15.jar" size="58917" download="eager" />
-    <jar href="orthoFocus.jar" size="74986" download="eager" />
+    <jar href="orthoFocus.jar" size="77460" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="orthoFocus" >
     <param name="requiredFXVersion" value="8.0+"/>
