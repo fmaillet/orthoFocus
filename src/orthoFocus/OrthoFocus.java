@@ -46,7 +46,7 @@ import org.newdawn.easyogg.OggClip;
  */
 public class OrthoFocus extends Application {
     
-    final public static String version = "0.3.0" ;
+    final public static String version = "0.4.0" ;
     
     static boolean TSsupport, MTSsupport ;
     static GameFX game ;

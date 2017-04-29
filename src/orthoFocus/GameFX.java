@@ -222,6 +222,7 @@ class SocialDistraction extends Thread {
         anim.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
         anim.setInterpolator(Interpolator.LINEAR);
         anim.setDuration(new Duration(20000));
+        //anim.setAutoReverse(true);
         anim.setCycleCount(1);
         anim.play() ;
         
@@ -242,6 +243,8 @@ class SocialDistraction extends Thread {
                 road.getElements().addAll(path2);
                 anim.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
                 anim.setDuration(new Duration(10000));
+                anim.setAutoReverse(true);
+                anim.setCycleCount(2);
                 anim.play () ;
             }
             try {Thread.sleep(250);} catch (InterruptedException ie) {this.keepRunning = false;}
