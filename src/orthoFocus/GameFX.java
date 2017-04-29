@@ -8,6 +8,11 @@ package orthoFocus;
 //import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.PathTransition;
+import javafx.animation.PathTransition.OrientationType;
+import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -20,8 +25,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.ClosePath;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -29,6 +40,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import org.newdawn.easyogg.OggClip;
 
 
@@ -177,21 +189,62 @@ class SocialDistraction extends Thread {
         this.ground = ground ;
         this.face = face ;
         this.keepRunning = true ;
-        this.setName("Sensorial");
+        this.setName("SocialThrd");
     }
     
     public void run(){
-        if (!OrthoFocus.doSocialDistraction) {
-            face.setVisible(false);
-            return ;
-        }
+        face.setVisible(OrthoFocus.doSocialDistraction);
+        if (!OrthoFocus.doSocialDistraction) return ;
+        //face initial position
+        face.setTranslateX(0);face.setTranslateY(0);
+        face.setLayoutX(ground.getX() + ThreadLocalRandom.current().nextInt(100, 300 ));
+        face.setLayoutY(ground.getY() + ThreadLocalRandom.current().nextInt(40, 100 ));
+        
+        //Trajet
+        PathElement[] path = 
+        {
+            new MoveTo(0, 200),
+            //new ArcTo(100, 100, 0, 100, 400, false, false),
+            new LineTo(300, 150),
+            new ArcTo(100, 100, 0, ThreadLocalRandom.current().nextInt(10, 100 ), 100, false, false),
+            new LineTo(ground.getWidth()/2, 100),
+            new ArcTo(100, 100, 0, ThreadLocalRandom.current().nextInt(80, 150 ), ThreadLocalRandom.current().nextInt(80, 150 ), false, false),
+            new LineTo(ThreadLocalRandom.current().nextInt(100, (int) ground.getWidth()), 80),
+            new ArcTo(100, 100, 0, 100, 100, false, false),
+            //new LineTo(0, 300),
+            new ClosePath()
+        };
+        Path road = new Path();
+        road.getElements().addAll(path);
+        PathTransition anim = new PathTransition();
+        anim.setNode(face);
+        anim.setPath(road);
+        anim.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+        anim.setInterpolator(Interpolator.LINEAR);
+        anim.setDuration(new Duration(20000));
+        anim.setCycleCount(1);
+        anim.play() ;
+        
+        //On boucle pendant l'exercice
         while (this.keepRunning) {
-            for (int i = 0; i < 256; i++) {
-                   face.setTranslateX(i);
-                   //face.setLayoutX(20.0);
-                   //ground.setFill(Color.hsb(i / 256.0f, 1.0f, 1.0f));
-                   try {Thread.sleep(12);} catch (InterruptedException ie) {this.keepRunning = false;}
+            if (anim.getStatus() == Animation.Status.STOPPED) {
+                //On change le chemin
+                System.out.println ("change path") ;
+                PathElement[] path2 = {
+                    new MoveTo(0, ThreadLocalRandom.current().nextInt(100, (int) ground.getHeight())),
+                    new ArcTo(100, 100, 0, 100, 100, false, false),
+                    new LineTo(ThreadLocalRandom.current().nextInt(100, (int) ground.getWidth()), ThreadLocalRandom.current().nextInt(100, (int) ground.getHeight())),
+                    new ArcTo(100, 100, 0, 100, 100, false, false),
+                    new LineTo(300, 150),
+                    new ClosePath()
+                };
+                road.getElements().clear();
+                road.getElements().addAll(path2);
+                anim.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+                anim.setDuration(new Duration(10000));
+                anim.play () ;
             }
+            try {Thread.sleep(250);} catch (InterruptedException ie) {this.keepRunning = false;}
         }
     }
     
@@ -201,6 +254,8 @@ class Face extends Group {
     
     //Constructor
     public Face (double height) {
+        //invisible par défaut
+        this.setVisible(false);
         //position
         setTranslateX(300);
         setTranslateY(height+50);
